@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Repo Secure Task Management</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-elevated: #141a2f;
+      --accent: #4f46e5;
+      --accent-soft: rgba(79,70,229,0.12);
+      --accent-alt: #22c55e;
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #ef4444;
+      --border-subtle: rgba(148,163,184,0.35);
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --shadow-lg: 0 22px 45px rgba(15,23,42,0.85);
+      --shadow-soft: 0 14px 30px rgba(15,23,42,0.65);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1d243b, #050816 55%, #020617 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .app-shell {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+      backdrop-filter: blur(20px);
+      background: linear-gradient(120deg, rgba(15,23,42,0.96), rgba(15,23,42,0.94));
+    }
+
+    .sidebar {
+      width: 260px;
+      padding: 20px 18px;
+      border-right: 1px solid rgba(55,65,81,0.65);
+      background: radial-gradient(circle at top, #111827, #020617 90%);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .brand-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      background: conic-gradient(from 160deg, #4f46e5, #22c55e, #f97316, #4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(15,23,42,0.7);
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      font-size: 14px;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      margin: 4px 0 4px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-button {
+      width: 100%;
+      padding: 10px 11px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.14s ease-out;
+    }
+
+    .nav-button span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .nav-pill {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15,118,110,0.25);
+      color: #6ee7b7;
+      border: 1px solid rgba(16,185,129,0.45);
+    }
+
+    .nav-button.active,
+    .nav-button:hover {
+      color: #e5e7eb;
+      background: rgba(15,23,42,0.9);
+      border-color: rgba(148,163,184,0.6);
+      box-shadow: 0 12px 26px rgba(15,23,42,0.9);
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(79,70,229,0.35), rgba(59,130,246,0.18));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px dashed rgba(75,85,99,0.7);
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-secure {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      border: 1px solid rgba(22,163,74,0.65);
+      color: #bbf7d0;
+      background: rgba(21,128,61,0.18);
+    }
+
+    .badge-env {
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 9px;
+      border: 1px solid rgba(37,99,235,0.55);
+      color: #bfdbfe;
+      background: rgba(37,99,235,0.15);
+    }
+
+    .content {
+      flex: 1;
+      padding: 18px 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.02em;
+    }
+
+    .title-block p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .user-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.7);
+      font-size: 12px;
+    }
+
+    .user-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #4f46e5, #22c55e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .user-email {
+      max-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-ghost {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+      padding: 3px 4px;
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+    }
+
+    /* Statistics Panel */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      border-radius: var(--radius-md);
+      background: radial-gradient(circle at top left, rgba(55,65,81,0.55), rgba(15,23,42,0.95));
+      border: 1px solid rgba(148,163,184,0.5);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stat-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.7);
+      border: 1px solid rgba(148,163,184,0.55);
+    }
+
+    /* Search & Filter Bar */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      background: rgba(15,23,42,0.9);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 12px;
+      color: var(--text);
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+    }
+
+    .search-input:focus {
+      border-color: rgba(129,140,248,0.9);
+      box-shadow: 0 0 0 1px rgba(129,140,248,0.6);
+    }
+
+    .filter-select {
+      background: rgba(15,23,42,0.9);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 12px;
+      color: var(--text);
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+    }
+
+    .filter-select:focus {
+      border-color: rgba(129,140,248,0.9);
+      box-shadow: 0 0 0 1px rgba(129,140,248,0.6);
+    }
+
+    .btn-clear-filters {
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      background: rgba(15,23,42,0.9);
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+    }
+
+    .btn-clear-filters:hover {
+      color: var(--text);
+      border-color: rgba(148,163,184,0.8);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.8fr 1.1fr;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .panel {
+      border-radius: var(--radius-lg);
+      background: radial-gradient(circle at top left, rgba(55,65,81,0.55), rgba(15,23,42,0.95));
+      border: 1px solid rgba(148,163,184,0.5);
+      box-shadow: var(--shadow-lg);
+      padding: 14px 14px 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at top left, rgba(79,70,229,0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(56,189,248,0.14), transparent 55%);
+      opacity: 0.85;
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .panel-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .pill {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.7);
+      border: 1px solid rgba(148,163,184,0.55);
+      color: var(--text-muted);
+    }
+
+    .ticket-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .ticket-table thead {
+      text-align: left;
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    .ticket-table th,
+    .ticket-table td {
+      padding: 7px 6px;
+      border-bottom: 1px solid rgba(31,41,55,0.9);
+    }
+
+    .ticket-table tbody tr:hover {
+      background: rgba(15,23,42,0.75);
+    }
+
+    .ticket-title-cell {
+      font-weight: 500;
+    }
+
+    .ticket-desc-cell {
+      color: var(--text-muted);
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .status-badge.open {
+      background: rgba(16,185,129,0.2);
+      border: 1px solid rgba(16,185,129,0.7);
+      color: #6ee7b7;
+    }
+
+    .status-badge.in_progress {
+      background: rgba(234,179,8,0.2);
+      border: 1px solid rgba(234,179,8,0.7);
+      color: #fde047;
+    }
+
+    .status-badge.closed {
+      background: rgba(107,114,128,0.2);
+      border: 1px solid rgba(107,114,128,0.7);
+      color: #d1d5db;
+    }
+
+    .status-badge.resolved {
+      background: rgba(59,130,246,0.2);
+      border: 1px solid rgba(59,130,246,0.7);
+      color: #93c5fd;
+    }
+
+    /* Priority Badges */
+    .priority-badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .priority-badge.low {
+      background: rgba(107,114,128,0.2);
+      border: 1px solid rgba(107,114,128,0.7);
+      color: #d1d5db;
+    }
+
+    .priority-badge.normal {
+      background: rgba(59,130,246,0.2);
+      border: 1px solid rgba(59,130,246,0.7);
+      color: #93c5fd;
+    }
+
+    .priority-badge.high {
+      background: rgba(249,115,22,0.2);
+      border: 1px solid rgba(249,115,22,0.7);
+      color: #fdba74;
+    }
+
+    .priority-badge.critical {
+      background: rgba(239,68,68,0.2);
+      border: 1px solid rgba(239,68,68,0.7);
+      color: #fca5a5;
+    }
+
+    /* Category Badge */
+    .category-badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.7);
+      border: 1px solid rgba(148,163,184,0.55);
+      color: var(--text-muted);
+      text-transform: capitalize;
+    }
+
+    .actions {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .btn-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: rgba(15,23,42,0.8);
+      color: var(--text-muted);
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+    }
+
+    .btn-icon:hover {
+      border-color: rgba(148,163,184,0.8);
+      color: #e5e7eb;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn-status {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: rgba(15,23,42,0.8);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+    }
+
+    .btn-status:hover {
+      border-color: rgba(148,163,184,0.8);
+      color: #e5e7eb;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #4f46e5, #22c55e);
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(34,197,94,0.55);
+    }
+
+    .btn-primary span {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+
+    .form-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      background: rgba(15,23,42,0.9);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      padding: 7px 9px;
+      color: var(--text);
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: rgba(129,140,248,0.9);
+      box-shadow: 0 0 0 1px rgba(129,140,248,0.6);
+    }
+
+    .small-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .field-helper {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+      gap: 8px;
+    }
+
+    .status-badge-form {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(52,211,153,0.7);
+      background: rgba(16,185,129,0.2);
+      color: #bbf7d0;
+    }
+
+    .message-bar {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      min-height: 16px;
+    }
+
+    .message-bar.error {
+      color: #fecaca;
+    }
+
+    .message-bar.success {
+      color: #bbf7d0;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: radial-gradient(circle at top left, rgba(55,65,81,0.95), rgba(15,23,42,0.98));
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148,163,184,0.5);
+      box-shadow: var(--shadow-lg);
+      padding: 20px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .modal-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: rgba(15,23,42,0.8);
+      color: var(--text-muted);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+    }
+
+    .modal-close:hover {
+      border-color: rgba(148,163,184,0.8);
+      color: #e5e7eb;
+    }
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(31,41,55,0.9);
+    }
+
+    .modal-info-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .modal-info-value {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .token-preview {
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: rgba(15,23,42,0.7);
+      padding: 6px 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(148,163,184,0.35);
+      word-break: break-all;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        display: none;
+      }
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+      .content {
+        padding: 14px 12px 18px;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-avatar">RS</div>
+        <div class="brand-text">
+          <div class="brand-title">Repo Secure</div>
+          <div class="brand-subtitle">Task Management</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">Workspace</div>
+        <div class="nav">
+          <button class="nav-button active" type="button">
+            <span>
+              <span class="nav-icon">◎</span>
+              Tickets
+            </span>
+            <span class="nav-pill" id="ticketsCountPill">0 open</span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">Security</div>
+        <div class="nav">
+          <button class="nav-button" type="button" id="jwtSessionBtn">
+            <span>
+              <span class="nav-icon">🔐</span>
+              JWT Session
+            </span>
+            <span class="pill">Active</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <span class="badge-secure">Secure Repo Workspace</span>
+        <span class="badge-env">LOCAL</span>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="content-header">
+        <div class="title-block">
+          <h1>Ticket Console</h1>
+          <p>Manage your secure tasks and incidents after login.</p>
+        </div>
+        <div class="user-chip">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <div class="user-email" id="userEmail">session@local</div>
+          <button class="btn-ghost" id="logoutBtn" type="button">Logout</button>
+        </div>
+      </header>
+
+      <!-- Statistics Panel -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Statistics</div>
+              <div class="panel-subtitle">Ticket overview</div>
+            </div>
+          </div>
+          <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+              <div class="stat-label">Total</div>
+              <div class="stat-value" id="statTotal">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Open</div>
+              <div class="stat-value" id="statOpen">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">In Progress</div>
+              <div class="stat-value" id="statInProgress">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Closed</div>
+              <div class="stat-value" id="statClosed">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Priority Breakdown</div>
+              <div class="stat-value" id="statPriority">-</div>
+              <div class="stat-sub" id="statPriorityBreakdown"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search & Filter Bar -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="filter-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search tickets..." />
+            <select id="filterStatus" class="filter-select">
+              <option value="">All Status</option>
+              <option value="open">Open</option>
+              <option value="in_progress">In Progress</option>
+              <option value="closed">Closed</option>
+              <option value="resolved">Resolved</option>
+            </select>
+            <select id="filterPriority" class="filter-select">
+              <option value="">All Priority</option>
+              <option value="low">Low</option>
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+            <select id="filterCategory" class="filter-select">
+              <option value="">All Category</option>
+              <option value="repo">Repository</option>
+              <option value="infra">Infrastructure</option>
+              <option value="security">Security</option>
+              <option value="bug">Bug</option>
+              <option value="feature">Feature</option>
+              <option value="other">Other</option>
+            </select>
+            <button class="btn-clear-filters" id="clearFiltersBtn">Clear</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="main-grid">
+        <section class="panel">
+          <div class="panel-inner">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">
+                  Current Tickets
+                  <span class="panel-subtitle">SQLite-backed, JWT protected</span>
+                </div>
+              </div>
+              <button class="btn-primary" id="refreshBtn" type="button">
+                ⟳ Reload
+                <span>from API</span>
+              </button>
+            </div>
+
+            <table class="ticket-table">
+              <thead>
+                <tr>
+                  <th style="width: 32px;">#</th>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Category</th>
+                  <th style="width: 120px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ticketsBody">
+                <tr>
+                  <td colspan="6" style="padding: 10px 6px; color: var(--text-muted);">
+                    No tickets yet. Create your first task on the right.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-inner">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">
+                  New Secure Ticket
+                  <span class="panel-subtitle">Saved directly into SQLite</span>
+                </div>
+              </div>
+            </div>
+
+            <form id="createTicketForm" class="form-card">
+              <div class="field">
+                <label for="ticketTitle">Title</label>
+                <input id="ticketTitle" type="text" required placeholder="Short summary (e.g. API outage, Bug in repo)" />
+              </div>
+
+              <div class="field">
+                <label for="ticketDescription">Description</label>
+                <textarea id="ticketDescription" placeholder="Describe what needs to be done or investigated..." required></textarea>
+                <div class="field-helper">
+                  This text is stored in your local SQLite database (`tickets.db`).
+                </div>
+              </div>
+
+              <div class="small-row">
+                <div class="field" style="flex: 1;">
+                  <label for="ticketStatus">Status</label>
+                  <select id="ticketStatus">
+                    <option value="open">Open</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="closed">Closed</option>
+                    <option value="resolved">Resolved</option>
+                  </select>
+                </div>
+                <div class="field" style="flex: 1;">
+                  <label for="ticketPriority">Priority</label>
+                  <select id="ticketPriority">
+                    <option value="low">Low</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="ticketCategory">Category</label>
+                <select id="ticketCategory">
+                  <option value="repo">Repository</option>
+                  <option value="infra">Infrastructure</option>
+                  <option value="security">Security</option>
+                  <option value="bug">Bug</option>
+                  <option value="feature">Feature</option>
+                  <option value="other" selected>Other</option>
+                </select>
+              </div>
+
+              <div class="form-footer">
+                <span class="status-badge-form" id="statusBadge">Session secure • JWT</span>
+                <button class="btn-primary" type="submit">
+                  + Create Ticket
+                </button>
+              </div>
+              <div id="ticketMessage" class="message-bar"></div>
+            </form>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <!-- JWT Session Modal -->
+  <div class="modal-overlay" id="jwtSessionModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">JWT Session Information</h3>
+        <button class="modal-close" id="closeJwtModal">✕</button>
+      </div>
+      <div class="modal-body" id="jwtSessionContent">
+        <div class="modal-info-row">
+          <span class="modal-info-label">Loading...</span>
+          <span class="modal-info-value"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Ticket Modal -->
+  <div class="modal-overlay" id="editTicketModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Ticket</h3>
+        <button class="modal-close" id="closeEditModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="editTicketForm" class="form-card">
+          <input type="hidden" id="editTicketId" />
+          <div class="field">
+            <label for="editTicketTitle">Title</label>
+            <input id="editTicketTitle" type="text" required />
+          </div>
+          <div class="field">
+            <label for="editTicketDescription">Description</label>
+            <textarea id="editTicketDescription" required></textarea>
+          </div>
+          <div class="small-row">
+            <div class="field" style="flex: 1;">
+              <label for="editTicketStatus">Status</label>
+              <select id="editTicketStatus">
+                <option value="open">Open</option>
+                <option value="in_progress">In Progress</option>
+                <option value="closed">Closed</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+            <div class="field" style="flex: 1;">
+              <label for="editTicketPriority">Priority</label>
+              <select id="editTicketPriority">
+                <option value="low">Low</option>
+                <option value="normal">Normal</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="editTicketCategory">Category</label>
+            <select id="editTicketCategory">
+              <option value="repo">Repository</option>
+              <option value="infra">Infrastructure</option>
+              <option value="security">Security</option>
+              <option value="bug">Bug</option>
+              <option value="feature">Feature</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-footer">
+            <button type="button" class="btn-clear-filters" id="cancelEditBtn">Cancel</button>
+            <button type="submit" class="btn-primary">Save Changes</button>
+          </div>
+          <div id="editTicketMessage" class="message-bar"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

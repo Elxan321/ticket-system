@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Repo Secure • Access</title>
+
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-card: rgba(15,23,42,0.96);
+      --accent: #4f46e5;
+      --accent-soft: rgba(79,70,229,0.18);
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(148,163,184,0.35);
+      --danger: #ef4444;
+      --radius-lg: 18px;
+      --radius-md: 10px;
+      --shadow-lg: 0 24px 55px rgba(15,23,42,0.95);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, #1d243b, #020617 55%, #000 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 24px;
+      max-width: 960px;
+      width: 100%;
+      background: radial-gradient(circle at top left, rgba(55,65,81,0.6), rgba(15,23,42,0.98));
+      border-radius: 26px;
+      border: 1px solid rgba(148,163,184,0.55);
+      box-shadow: var(--shadow-lg);
+      padding: 22px 22px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shell::before {
+      content: "";
+      position: absolute;
+      inset: -35%;
+      background:
+        radial-gradient(circle at top left, rgba(79,70,229,0.33), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(34,197,94,0.28), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .shell-inner {
+      position: relative;
+      z-index: 1;
+      display: contents;
+    }
+
+    .hero {
+      padding-right: 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.88);
+      border: 1px solid rgba(148,163,184,0.7);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.4);
+    }
+
+    .hero-title {
+      font-size: 26px;
+      letter-spacing: 0.02em;
+      margin: 0;
+    }
+
+    .hero-subtitle {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 380px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .chip {
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.8);
+    }
+
+    .form-card {
+      border-radius: var(--radius-lg);
+      background: rgba(15,23,42,0.96);
+      border: 1px solid rgba(148,163,184,0.6);
+      padding: 16px 16px 14px;
+      backdrop-filter: blur(18px);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      padding: 2px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(55,65,81,0.9);
+      margin-bottom: 14px;
+    }
+
+    .tab {
+      flex: 1;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease-out;
+    }
+
+    .tab.active {
+      color: #e5e7eb;
+      background: linear-gradient(135deg, #4f46e5, #22c55e);
+      box-shadow: 0 10px 26px rgba(34,197,94,0.55);
+    }
+
+    .tab span {
+      font-size: 11px;
+      opacity: 0.95;
+    }
+
+    .form-title {
+      font-size: 16px;
+      margin: 0 0 4px;
+    }
+
+    .form-subtitle {
+      margin: 0 0 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .field label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .field input {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 10px;
+      background: rgba(15,23,42,0.96);
+      color: var(--text);
+      outline: none;
+      font-size: 12px;
+      transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+    }
+
+    .field input:focus {
+      border-color: rgba(129,140,248,0.9);
+      box-shadow: 0 0 0 1px rgba(129,140,248,0.7);
+    }
+
+    .field-helper {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #4f46e5, #22c55e);
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(34,197,94,0.55);
+    }
+
+    .btn-ghost {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+      padding: 4px 2px;
+    }
+
+    .message {
+      font-size: 11px;
+      margin-top: 6px;
+      min-height: 16px;
+      color: var(--text-muted);
+    }
+
+    .message.error {
+      color: #fecaca;
+    }
+
+    .message.success {
+      color: #bbf7d0;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    @media (max-width: 800px) {
+      .shell {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 18px 14px 16px;
+      }
+      .hero {
+        order: 2;
+        text-align: left;
+        padding-right: 0;
+      }
+      .hero-title {
+        font-size: 22px;
+      }
+      .hero-subtitle {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="shell-inner">
+      <section class="hero">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          Repo Secure • Local Environment
+        </div>
+        <h1 class="hero-title">Sign in to your secure ticket space</h1>
+        <p class="hero-subtitle">
+          Authenticate with your local account to manage tasks and incidents stored safely in your SQLite-backed ticket system.
+        </p>
+        <div class="hero-meta">
+          <span class="chip">JWT-based session</span>
+          <span class="chip">SQLite (`tickets.db`)</span>
+          <span class="chip">Dashboard &amp; Tickets</span>
+        </div>
+      </section>
+
+      <section class="form-card">
+        <div class="tabs">
+          <button class="tab active" id="tabLogin" type="button">
+            Login
+            <span>Existing user</span>
+          </button>
+          <button class="tab" id="tabSignup" type="button">
+            Sign up
+            <span>New account</span>
+          </button>
+        </div>
+
+        <!-- LOGIN VIEW -->
+        <div class="view active" id="viewLogin">
+          <h2 class="form-title">Welcome back</h2>
+          <p class="form-subtitle">Enter your credentials to continue to the dashboard.</p>
+
+          <form id="loginForm">
+            <div class="field">
+              <label for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" autocomplete="email" required />
+            </div>
+            <div class="field">
+              <label for="loginPassword">Password</label>
+              <input type="password" id="loginPassword" autocomplete="current-password" required />
+            </div>
+            <div class="actions-row">
+              <button type="submit" class="btn-primary">
+                Login
+              </button>
+              <button type="button" class="btn-ghost" id="goToSignupBtn">
+                Need an account?
+              </button>
+            </div>
+            <div id="loginMsg" class="message"></div>
+          </form>
+        </div>
+
+        <!-- SIGNUP VIEW -->
+        <div class="view" id="viewSignup">
+          <h2 class="form-title">Create your account</h2>
+          <p class="form-subtitle">Sign up once, then log in securely to your dashboard.</p>
+
+          <form id="signupForm">
+            <div class="field">
+              <label for="signupName">Name</label>
+              <input type="text" id="signupName" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label for="signupEmail">Email</label>
+              <input type="email" id="signupEmail" autocomplete="email" required />
+            </div>
+            <div class="field">
+              <label for="signupPassword">Password</label>
+              <input type="password" id="signupPassword" autocomplete="new-password" required />
+              <div class="field-helper">
+                Stored hashed in your local database.
+              </div>
+            </div>
+            <div class="actions-row">
+              <button type="submit" class="btn-primary">
+                Create account
+              </button>
+              <button type="button" class="btn-ghost" id="goToLoginBtn">
+                Already registered?
+              </button>
+            </div>
+            <div id="signupMsg" class="message"></div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
