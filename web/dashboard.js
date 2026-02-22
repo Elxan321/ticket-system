@@ -560,18 +560,40 @@ function escapeHtml(str) {
 }
 
 function setupLogout() {
-  const btn = document.getElementById("logoutBtn");
-  btn.addEventListener("click", () => {
-    localStorage.removeItem("token");
-    alert("Logged out. Please return to the login page.");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const logoutModal = document.getElementById("logoutModal");
+  const closeLogoutModal = document.getElementById("closeLogoutModal");
+  const cancelLogoutBtn = document.getElementById("cancelLogoutBtn");
+  const confirmLogoutBtn = document.getElementById("confirmLogoutBtn");
+
+  function openLogoutModal() {
+    logoutModal.classList.add("active");
+  }
+
+  function closeLogout() {
+    logoutModal.classList.remove("active");
+  }
+
+  logoutBtn.addEventListener("click", openLogoutModal);
+  closeLogoutModal.addEventListener("click", closeLogout);
+  cancelLogoutBtn.addEventListener("click", closeLogout);
+
+  confirmLogoutBtn.addEventListener("click", async () => {
+    const token = localStorage.getItem("token");
+
     try {
-      const current = window.location.href;
-      if (current.includes("dashboard")) {
-        window.location.href = current.replace("dashboard.html", "login.html");
-      }
-    } catch (_) {
-      // ignore
+      await fetch(`${API_BASE}/api/logout`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+    } catch (err) {
+      console.warn("Backend logout endpoint not available.");
     }
+
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
   });
 }
 

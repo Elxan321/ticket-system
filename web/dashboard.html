@@ -901,9 +901,9 @@
             <input type="text" id="searchInput" class="search-input" placeholder="Search tickets..." />
             <select id="filterStatus" class="filter-select">
               <option value="">All Status</option>
-              <option value="open">Open</option>
+              <option value="block">Block</option>
               <option value="in_progress">In Progress</option>
-              <option value="closed">Closed</option>
+              <option value="compliter">Compliter</option>
               <option value="resolved">Resolved</option>
             </select>
             <select id="filterPriority" class="filter-select">
@@ -1108,6 +1108,23 @@
           </div>
           <div id="editTicketMessage" class="message-bar"></div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout Confirmation Modal -->
+  <div class="modal-overlay" id="logoutModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirm Logout</h3>
+        <button type="button" class="modal-close" id="closeLogoutModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to log out from your current session?</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="cancelLogoutBtn">No, stay logged in</button>
+        <button type="button" class="btn-primary btn-danger" id="confirmLogoutBtn">Yes, log out</button>
       </div>
     </div>
   </div>

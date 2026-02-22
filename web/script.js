@@ -95,3 +95,117 @@ signupForm.addEventListener("submit", async (e) => {
     msg.className = "message error";
   }
 });
+
+// OAuth Provider Functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const oauthButtons = document.querySelectorAll('.oauth-btn');
+  
+  oauthButtons.forEach(button => {
+    button.addEventListener('click', async function() {
+      const provider = this.getAttribute('data-provider');
+      await initiateOAuth(provider);
+    });
+  });
+});
+
+async function initiateOAuth(provider) {
+  const msg = document.getElementById("signupMsg");
+  
+  try {
+    // Store OAuth state for security
+    const state = generateOAuthState();
+    localStorage.setItem('oauth_state', state);
+    localStorage.setItem('oauth_provider', provider);
+    
+    // Get OAuth URLs based on provider
+    const oauthUrls = {
+      google: `https://accounts.google.com/oauth/authorize?` +
+        `client_id=YOUR_GOOGLE_CLIENT_ID&` +
+        `redirect_uri=${encodeURIComponent(window.location.origin + '/oauth/callback')}&` +
+        `response_type=code&` +
+        `scope=email profile&` +
+        `state=${state}`,
+      
+      apple: `https://appleid.apple.com/auth/authorize?` +
+        `client_id=YOUR_APPLE_CLIENT_ID&` +
+        `redirect_uri=${encodeURIComponent(window.location.origin + '/oauth/callback')}&` +
+        `response_type=code&` +
+        `scope=email name&` +
+        `state=${state}`,
+      
+      microsoft: `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?` +
+        `client_id=YOUR_MICROSOFT_CLIENT_ID&` +
+        `redirect_uri=${encodeURIComponent(window.location.origin + '/oauth/callback')}&` +
+        `response_type=code&` +
+        `scope=openid email profile&` +
+        `state=${state}`
+    };
+    
+    const authUrl = oauthUrls[provider];
+    
+    if (authUrl) {
+      msg.textContent = `Redirecting to ${provider}...`;
+      msg.className = "message";
+      
+      // Open OAuth provider in popup for better UX
+      const popup = window.open(authUrl, `${provider}_oauth`, 'width=500,height=600,scrollbars=yes,resizable=yes');
+      
+      // Listen for popup close
+      const checkClosed = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkClosed);
+          msg.textContent = "OAuth login cancelled or completed.";
+          setTimeout(() => {
+            msg.textContent = "";
+          }, 3000);
+        }
+      }, 1000);
+      
+    } else {
+      msg.textContent = `${provider} OAuth not configured`;
+      msg.className = "message error";
+    }
+    
+  } catch (err) {
+    console.error('OAuth error:', err);
+    msg.textContent = `Failed to initiate ${provider} login`;
+    msg.className = "message error";
+  }
+}
+
+function generateOAuthState() {
+  return Math.random().toString(36).substring(2, 15) + 
+         Math.random().toString(36).substring(2, 15);
+}
+
+// Handle OAuth callback (this would be called on a callback page)
+function handleOAuthCallback(code, state, provider) {
+  const storedState = localStorage.getItem('oauth_state');
+  const storedProvider = localStorage.getItem('oauth_provider');
+  
+  if (state !== storedState || provider !== storedProvider) {
+    console.error('OAuth state mismatch');
+    return;
+  }
+  
+  // Clear OAuth state
+  localStorage.removeItem('oauth_state');
+  localStorage.removeItem('oauth_provider');
+  
+  // Send authorization code to backend
+  fetch('/api/oauth/callback', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, state, provider })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      window.location.href = 'dashboard.html';
+    }
+  })
+  .catch(err => {
+    console.error('OAuth callback error:', err);
+  });
+}
