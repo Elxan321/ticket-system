@@ -240,7 +240,9 @@ function renderTicketsTable(tickets) {
       <td>${id}</td>
       <td class="ticket-title-cell">${title}</td>
       <td>
-        <span class="status-badge ${getStatusBadgeClass(status)}">${status.replace("_", " ")}</span>
+        <span class="status-badge ${getStatusBadgeClass(status)}">
+          ${status === "open" ? "Block" : status === "closed" ? "Compliter" : status.replace("_", " ")}
+        </span>
       </td>
       <td>
         <span class="priority-badge ${getPriorityBadgeClass(priority)}">${priority}</span>
@@ -602,6 +604,7 @@ function setupFilters() {
   const filterStatus = document.getElementById("filterStatus");
   const filterPriority = document.getElementById("filterPriority");
   const filterCategory = document.getElementById("filterCategory");
+  const workspaceBtns = document.querySelectorAll(".workspace-btn");
   const clearBtn = document.getElementById("clearFiltersBtn");
 
   let searchTimeout;
@@ -625,6 +628,8 @@ function setupFilters() {
 
   filterCategory.addEventListener("change", (e) => {
     currentFilters.category = e.target.value;
+    // Update workspace button state when filter changes manually
+    updateWorkspaceBtnState();
     fetchTickets();
   });
 
@@ -637,7 +642,42 @@ function setupFilters() {
     filterStatus.value = "";
     filterPriority.value = "";
     filterCategory.value = "";
+    updateWorkspaceBtnState();
     fetchTickets();
+  });
+
+  // Workspace button handlers
+  workspaceBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const category = btn.getAttribute("data-category");
+      // Update active state
+      workspaceBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      // Apply category filter
+      currentFilters.category = category;
+      filterCategory.value = category;
+      // Reset other filters for clarity when switching workspace
+      currentFilters.search = "";
+      currentFilters.status = "";
+      currentFilters.priority = "";
+      searchInput.value = "";
+      filterStatus.value = "";
+      filterPriority.value = "";
+      // Fetch tickets in this workspace
+      fetchTickets();
+    });
+  });
+}
+
+function updateWorkspaceBtnState() {
+  const workspaceBtns = document.querySelectorAll(".workspace-btn");
+  workspaceBtns.forEach(btn => {
+    const category = btn.getAttribute("data-category");
+    if (category === currentFilters.category) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
   });
 }
 

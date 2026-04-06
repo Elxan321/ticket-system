@@ -21,6 +21,13 @@ func main() {
 	r.POST("/login", handlers.Login)
 	r.POST("/register", handlers.Register)
 
+	// Public / route for testing
+    r.GET("/", func(c *gin.Context) {
+	    c.JSON(200, gin.H{
+		    "message": "Server is working",
+	   })
+  })
+
 	// Protected ticket routes (require JWT)
 	api := r.Group("/api")
 	api.Use(middleware.AuthMiddleware())

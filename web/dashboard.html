@@ -817,12 +817,40 @@
       <div>
         <div class="sidebar-section-title">Workspace</div>
         <div class="nav">
-          <button class="nav-button active" type="button">
+          <button class="nav-button workspace-btn active" data-category="" type="button">
             <span>
               <span class="nav-icon">◎</span>
-              Tickets
+              Home
             </span>
             <span class="nav-pill" id="ticketsCountPill">0 open</span>
+          </button>
+          <button class="nav-button workspace-btn" data-category="frontend" type="button">
+            <span>
+              <span class="nav-icon">ƒ</span>
+              Frontend
+            </span>
+            <span class="pill">view</span>
+          </button>
+          <button class="nav-button workspace-btn" data-category="backend" type="button">
+            <span>
+              <span class="nav-icon">≡</span>
+              Backend
+            </span>
+            <span class="pill">view</span>
+          </button>
+          <button class="nav-button workspace-btn" data-category="helpdesk" type="button">
+            <span>
+              <span class="nav-icon">?</span>
+              Helpdesk
+            </span>
+            <span class="pill">view</span>
+          </button>
+          <button class="nav-button workspace-btn" data-category="devops" type="button">
+            <span>
+              <span class="nav-icon">⚙</span>
+              DevOps
+            </span>
+            <span class="pill">view</span>
           </button>
         </div>
       </div>
@@ -901,9 +929,9 @@
             <input type="text" id="searchInput" class="search-input" placeholder="Search tickets..." />
             <select id="filterStatus" class="filter-select">
               <option value="">All Status</option>
-              <option value="block">Block</option>
+              <option value="open">Block</option>
               <option value="in_progress">In Progress</option>
-              <option value="compliter">Compliter</option>
+              <option value="closed">Compliter</option>
               <option value="resolved">Resolved</option>
             </select>
             <select id="filterPriority" class="filter-select">
@@ -920,6 +948,10 @@
               <option value="security">Security</option>
               <option value="bug">Bug</option>
               <option value="feature">Feature</option>
+              <option value="frontend">Frontend</option>
+              <option value="backend">Backend</option>
+              <option value="helpdesk">Helpdesk</option>
+              <option value="devops">DevOps</option>
               <option value="other">Other</option>
             </select>
             <button class="btn-clear-filters" id="clearFiltersBtn">Clear</button>
@@ -1018,7 +1050,11 @@
                   <option value="infra">Infrastructure</option>
                   <option value="security">Security</option>
                   <option value="bug">Bug</option>
-                  <option value="feature">Feature</option>
+                    <option value="feature">Feature</option>
+                    <option value="frontend">Frontend</option>
+                    <option value="backend">Backend</option>
+                    <option value="helpdesk">Helpdesk</option>
+                    <option value="devops">DevOps</option>
                   <option value="other" selected>Other</option>
                 </select>
               </div>
@@ -1075,9 +1111,9 @@
             <div class="field" style="flex: 1;">
               <label for="editTicketStatus">Status</label>
               <select id="editTicketStatus">
-                <option value="open">Open</option>
+                <option value="open">Block</option>
                 <option value="in_progress">In Progress</option>
-                <option value="closed">Closed</option>
+                <option value="closed">Compliter</option>
                 <option value="resolved">Resolved</option>
               </select>
             </div>
@@ -1098,8 +1134,12 @@
               <option value="infra">Infrastructure</option>
               <option value="security">Security</option>
               <option value="bug">Bug</option>
-              <option value="feature">Feature</option>
-              <option value="other">Other</option>
+                  <option value="feature">Feature</option>
+                  <option value="frontend">Frontend</option>
+                  <option value="backend">Backend</option>
+                  <option value="helpdesk">Helpdesk</option>
+                  <option value="devops">DevOps</option>
+                  <option value="other">Other</option>
             </select>
           </div>
           <div class="form-footer">
