@@ -1,3 +1,6 @@
+const API_BASE = "";
+const REQUEST_TIMEOUT_MS = 10000;
+
 const loginForm = document.getElementById("loginForm");
 const signupForm = document.getElementById("signupForm");
 const tabLogin = document.getElementById("tabLogin");
@@ -24,13 +27,24 @@ tabSignup.addEventListener("click", () => activateView("signup"));
 goToSignupBtn.addEventListener("click", () => activateView("signup"));
 goToLoginBtn.addEventListener("click", () => activateView("login"));
 
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
 
   try {
-    const res = await fetch("http://localhost:8081/login", {
+    const res = await fetchWithTimeout(`${API_BASE}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -56,7 +70,10 @@ loginForm.addEventListener("submit", async (e) => {
   } catch (err) {
     console.error("Login error:", err);
     const msg = document.getElementById("loginMsg");
-    msg.textContent = "Cannot connect to server.";
+    msg.textContent =
+      err.name === "AbortError"
+        ? "Server timeout. Please try again."
+        : "Cannot connect to server.";
     msg.className = "message error";
   }
 });
@@ -68,7 +85,7 @@ signupForm.addEventListener("submit", async (e) => {
   const password = document.getElementById("signupPassword").value;
 
   try {
-    const res = await fetch("http://localhost:8081/register", {
+    const res = await fetchWithTimeout(`${API_BASE}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -91,7 +108,10 @@ signupForm.addEventListener("submit", async (e) => {
   } catch (err) {
     console.error("Signup error:", err);
     const msg = document.getElementById("signupMsg");
-    msg.textContent = "Cannot connect to server.";
+    msg.textContent =
+      err.name === "AbortError"
+        ? "Server timeout. Please try again."
+        : "Cannot connect to server.";
     msg.className = "message error";
   }
 });

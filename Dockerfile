@@ -1,5 +1,5 @@
 # BUILD STAGE
-FROM golang:1.25-alpine AS builder
+FROM golang:1.22-alpine AS builder
 
 WORKDIR /app
 
@@ -10,14 +10,14 @@ COPY . .
 
 WORKDIR /app/cmd/server
 
-RUN go build -o server
+RUN CGO_ENABLED=0 GOOS=linux go build -o /server
 
 # RUN STAGE (ÇOX YÜNGÜL)
 FROM alpine:latest
 
 WORKDIR /root/
 
-COPY --from=builder /app/cmd/server/server .
+COPY --from=builder /server ./server
 
 EXPOSE 8081
 
